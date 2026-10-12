@@ -57,7 +57,7 @@ Build включає TypeScript typecheck. Unit tests перевіряють з�
 
 ## Публікація демо на Render
 
-Репозиторій містить `render.yaml` для одного Node Web Service. Production-сервер бере порт із `PORT`, слухає `0.0.0.0`, віддає зібраний `dist` і приймає same-origin запити API. Якщо frontend розміщено на іншому домені, додайте його повний origin у `ALLOWED_ORIGINS`; кілька адрес розділяються комами.
+Репозиторій містить `render.yaml` для одного Node Web Service. Build використовує `npm ci --include=dev`, бо TypeScript, Vite і runtime `tsx` зафіксовані як dev-залежності, а сервіс запускається з `NODE_ENV=production`. Production-сервер бере порт із `PORT`, слухає `0.0.0.0`, віддає зібраний `dist` і приймає same-origin запити API. Якщо frontend розміщено на іншому домені, додайте його повний origin у `ALLOWED_ORIGINS`; кілька адрес розділяються комами.
 
 1. Створіть приватний або публічний GitHub-репозиторій і завантажте цей проєкт.
 2. У Render виберіть **New → Blueprint**, підключіть репозиторій і підтвердьте конфігурацію з `render.yaml`.
