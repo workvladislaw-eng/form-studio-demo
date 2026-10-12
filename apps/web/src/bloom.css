@@ -1,0 +1,3 @@
+.materials { flex-wrap:wrap; }
+.materials button { min-width:85px; }
+.sphere.blue-chrome { background:linear-gradient(135deg,#020b26 10%,#0765ee 32%,#d8f7ff 43%,#17518f 48%,#031533 65%,#ffb177 75%,#00bcff 90%); box-shadow:inset 0 0 0 1px #8adeff88,0 0 14px #006eff33; }

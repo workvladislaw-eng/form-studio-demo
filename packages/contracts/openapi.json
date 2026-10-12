@@ -1,0 +1,14 @@
+{
+  "openapi":"3.1.0",
+  "info":{"title":"FORM local prototype","version":"0.1.0","description":"Loopback-only technical slice. Not the production /api/v1 API."},
+  "servers":[{"url":"http://127.0.0.1:4173/api/prototype"}],
+  "components":{"securitySchemes":{"localHeader":{"type":"apiKey","in":"header","name":"X-Form-Prototype","description":"Value 1; local CSRF guard, not authentication"}},"schemas":{"Scene":{"$ref":"./scene.schema.json"},"GeometryRequest":{"type":"object","required":["svg","parameters"],"properties":{"svg":{"type":"string"},"parameters":{"type":"object","required":["depth","bevelRadius","bevelSegments","curveTolerance"],"properties":{"depth":{"type":"number"},"bevelRadius":{"type":"number"},"bevelSegments":{"type":"integer"},"curveTolerance":{"type":"number"}}}}},"RenderRequest":{"type":"object","required":["scene","purpose","format","transparent"],"properties":{"scene":{"$ref":"#/components/schemas/Scene"},"purpose":{"enum":["preview","final"]},"format":{"enum":["png","jpg"]},"transparent":{"type":"boolean"}}}}},
+  "paths":{
+    "/health":{"get":{"responses":{"200":{"description":"Local runtime and Blender availability"}}}},
+    "/geometry":{"post":{"security":[{"localHeader":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/GeometryRequest"}}}},"responses":{"200":{"description":"Validated mesh arrays, parameters and hash in data"},"422":{"description":"SVG or geometry rejected"},"429":{"description":"Geometry worker busy"}}}},
+    "/renders":{"post":{"security":[{"localHeader":[]}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RenderRequest"}}}},"responses":{"202":{"description":"Immutable local render started"},"422":{"description":"Invalid scene or export"},"429":{"description":"One render already active"},"503":{"description":"Blender unavailable"}}}},
+    "/renders/{id}":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"get":{"responses":{"200":{"description":"Render state and metrics in data"},"404":{"description":"Unknown job"}}}},
+    "/renders/{id}/cancel":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"post":{"security":[{"localHeader":[]}],"responses":{"202":{"description":"Cancellation requested"},"409":{"description":"Terminal state"},"404":{"description":"Unknown job"}}}},
+    "/renders/{id}/file":{"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"get":{"responses":{"200":{"description":"PNG or JPEG artifact"},"409":{"description":"Render not complete"},"404":{"description":"Unknown job"}}}}
+  }
+}

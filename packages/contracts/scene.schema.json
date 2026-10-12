@@ -1,0 +1,553 @@
+{
+  "$id": "https://form.local/scene-v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "metersPerUnit",
+    "objects",
+    "materials",
+    "camera",
+    "lights",
+    "environment",
+    "background",
+    "composition",
+    "colorManagement",
+    "volumetrics",
+    "styleOrigin"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "metersPerUnit": {
+      "const": 0.1
+    },
+    "postprocessing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enhancedBloom"
+      ],
+      "properties": {
+        "enhancedBloom": {
+          "type": "boolean"
+        }
+      }
+    },
+    "objects": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "geometryRevisionId",
+          "transform",
+          "partMaterialAssignments"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "geometryRevisionId": {
+            "type": "string"
+          },
+          "partMaterialAssignments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "transform": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "position",
+              "rotation",
+              "scale"
+            ],
+            "properties": {
+              "position": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "rotation": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 4,
+                "maxItems": 4
+              },
+              "scale": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 10
+              }
+            }
+          }
+        }
+      }
+    },
+    "materials": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "preset",
+          "model",
+          "baseColor",
+          "roughness",
+          "metalness",
+          "transmission",
+          "ior",
+          "absorptionPerMeter",
+          "texture",
+          "emissiveColor",
+          "emissiveIntensity",
+          "clearcoat",
+          "clearcoatRoughness",
+          "iridescence",
+          "iridescenceIOR"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "preset": {
+            "enum": [
+              "neon",
+              "blue-chrome",
+              "amber-glass",
+              "crystal",
+              "glass",
+              "metal",
+              "chrome"
+            ]
+          },
+          "model": {
+            "enum": [
+              "dielectric",
+              "conductor"
+            ]
+          },
+          "baseColor": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "space",
+              "value"
+            ],
+            "properties": {
+              "space": {
+                "const": "srgb"
+              },
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minItems": 3,
+                "maxItems": 3
+              }
+            }
+          },
+          "roughness": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "metalness": {
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "transmission": {
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "ior": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 2.5
+          },
+          "absorptionPerMeter": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "texture": {
+            "type": "null"
+          },
+          "emissiveColor": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "space",
+              "value"
+            ],
+            "properties": {
+              "space": {
+                "const": "srgb"
+              },
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minItems": 3,
+                "maxItems": 3
+              }
+            }
+          },
+          "emissiveIntensity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 20
+          },
+          "clearcoat": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "clearcoatRoughness": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "iridescence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "iridescenceIOR": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 2.5
+          }
+        }
+      }
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "position",
+        "target",
+        "up",
+        "verticalFovRad",
+        "near",
+        "far"
+      ],
+      "properties": {
+        "type": {
+          "const": "perspective"
+        },
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "target": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "up": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "verticalFovRad": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 3.14
+        },
+        "near": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "far": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "lights": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "position",
+          "target",
+          "up",
+          "width",
+          "height",
+          "color",
+          "powerWatts"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "const": "area"
+          },
+          "position": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "target": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "up": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "width": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "height": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "color": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "space",
+              "value"
+            ],
+            "properties": {
+              "space": {
+                "const": "srgb"
+              },
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "minItems": 3,
+                "maxItems": 3
+              }
+            }
+          },
+          "powerWatts": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000
+          }
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resourceId",
+        "rotationRad",
+        "strength"
+      ],
+      "properties": {
+        "resourceId": {
+          "type": "null"
+        },
+        "rotationRad": {
+          "type": "number"
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "background": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "driverPartId",
+        "algorithmVersion",
+        "color"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "auto",
+            "manual"
+          ]
+        },
+        "driverPartId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "algorithmVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "color": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "space",
+            "value"
+          ],
+          "properties": {
+            "space": {
+              "const": "srgb"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          }
+        }
+      }
+    },
+    "composition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aspect"
+      ],
+      "properties": {
+        "aspect": {
+          "enum": [
+            "16:9",
+            "9:16",
+            "4:3",
+            "3:4",
+            "1:1"
+          ]
+        }
+      }
+    },
+    "colorManagement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "exposureEV"
+      ],
+      "properties": {
+        "profile": {
+          "const": "standard-srgb-v1"
+        },
+        "exposureEV": {
+          "type": "number",
+          "minimum": -5,
+          "maximum": 5
+        }
+      }
+    },
+    "styleOrigin": {
+      "type": "null"
+    },
+    "lighting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "keyAngleRad"
+      ],
+      "properties": {
+        "keyAngleRad": {
+          "type": "number",
+          "minimum": -3.141592653589793,
+          "maximum": 3.141592653589793
+        }
+      }
+    },
+    "volumetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "density",
+        "anisotropy",
+        "intensity"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "anisotropy": {
+          "type": "number",
+          "minimum": -0.9,
+          "maximum": 0.9
+        },
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        }
+      }
+    }
+  }
+}

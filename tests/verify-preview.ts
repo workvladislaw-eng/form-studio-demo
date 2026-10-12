@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {makeScene} from '../packages/scene-core/scene';
+import {Euler,Quaternion} from 'three';
+const base='http://127.0.0.1:4173/api/prototype';
+async function call(route:string,body?:unknown){const r=await fetch(base+route,body?{method:'POST',headers:{'Content-Type':'application/json','X-Form-Prototype':'1'},body:JSON.stringify(body)}:undefined);const j=await r.json();if(!r.ok)throw new Error(JSON.stringify(j));return j.data;}
+const svg=await readFile('tests/fixtures/mark.svg','utf8'),parameters={depth:.18,bevelRadius:.025,bevelSegments:5,curveTolerance:.0004};
+const t=performance.now();const g=await call('/geometry',{svg,parameters});const coldMs=performance.now()-t;
+const t2=performance.now();await call('/geometry',{svg,parameters:{...parameters,depth:.2}});const warmMs=performance.now()-t2;
+const scene=makeScene(g.id,g.parts.map((p:{id:string})=>p.id));scene.objects[0].transform.rotation=new Quaternion().setFromEuler(new Euler(.18,-.38,-.08)).toArray();
+const job=await call('/renders',{scene,purpose:'preview',format:'png',transparent:false});
+await writeFile('.local/verification/refined-job.json',JSON.stringify({job,coldMs,warmMs},null,2));console.log('refined preview',job.id,'geometry ms',Math.round(coldMs),Math.round(warmMs));
+let result;
+do{await new Promise(resolve=>setTimeout(resolve,1500));result=await call('/renders/'+job.id);}while(result.status==='rendering');
+assert.equal(result.status,'completed',result.error);console.log('preview completed',result);
+const artifact=await fetch(base+'/renders/'+job.id+'/file');assert.equal(artifact.status,200);assert.match(artifact.headers.get('content-type')??'',/image\/png/);
+const canceled=await call('/renders',{scene,purpose:'final',format:'png',transparent:false});await call('/renders/'+canceled.id+'/cancel',{});
+let cancellation;do{await new Promise(resolve=>setTimeout(resolve,500));cancellation=await call('/renders/'+canceled.id);}while(cancellation.status==='cancel_requested');assert.equal(cancellation.status,'canceled');
+const unavailable=await fetch(base+'/renders/'+canceled.id+'/file');assert.equal(unavailable.status,409);
+await writeFile('.local/verification/refined-result.json',JSON.stringify({preview:result,cancellation:cancellation.status,coldMs,warmMs},null,2));console.log('download and cancellation OK');
